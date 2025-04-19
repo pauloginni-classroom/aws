@@ -27,6 +27,7 @@ def lambda_handler(event, context):
         )
     )
 
-    def new_function():
+    def change_new_function():
         pass
+
 
