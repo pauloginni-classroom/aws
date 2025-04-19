@@ -1,20 +1,29 @@
 import json
+import boto3
 
 def lambda_handler(event, context):
 
-    school = "CSUF"
-    Session = "Spring 2025"
-    ClassName = "CPSC-362"
-    class_time = "S 1:00 PM"
-    registration_status = "full"
+    client = boto3.client('ec2')
 
-    # Response object
-    response = {
-        "school": school,
-        "Session": Session,
-        "ClassName": ClassName,
-        "class_time": class_time,
-        "registration_status": registration_status
-    }
+    response = client.describe_instances(
+        InstanceIds=[
+            '<instance_id>',
+        ]
+    )
 
-    return response
+    PublicDnsName = response["Reservations"][0]["Instances"][0]["NetworkInterfaces"][0]["Association"]["PublicDnsName"]
+    private_ip_address = response["Reservations"][0]["Instances"][0]["NetworkInterfaces"][0]["PrivateDnsName"]
+    STATE = response["Reservations"][0]["Instances"][0]["State"]["Name"]
+
+    print(
+            json.dumps(
+                {
+                    "PublicDnsName": PublicDnsName,
+                    "private_ip_address": private_ip_address,
+                    "State": STATE
+
+                },
+                indent=4
+        )
+    )
+
